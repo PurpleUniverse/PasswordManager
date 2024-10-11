@@ -5,12 +5,15 @@ public class PasswordManager {
         PasswordVault vault = new PasswordVault();
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("\n" + " Welcome to the Password Manager ");
+        System.out.println(" -------------------------------");
+
         while (true) {
             System.out.println("1. Add Credential");
             System.out.println("2. Retrieve Credential");
             System.out.println("3. Generate Password");
             System.out.println("4. Exit");
-            System.out.print("Choose an option: ");
+            System.out.print("\n" + "Choose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
@@ -26,11 +29,11 @@ public class PasswordManager {
                     System.out.print("Enter username to retrieve: ");
                     String retrieveUsername = scanner.nextLine();
                     String retrievedPassword = vault.getCredential(retrieveUsername);
-                    System.out.println("Password: " + retrievedPassword);
+                    System.out.println("Password: " + retrievedPassword + "\n");
                     break;
                 case 3:
                     String generatedPassword = PasswordGenerator.generatePassword();
-                    System.out.println("Generated Password: " + generatedPassword);
+                    System.out.println("Generated Password: " + generatedPassword + "\n");
                     break;
                 case 4:
                     System.out.println("Exiting...");
