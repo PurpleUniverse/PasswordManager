@@ -30,7 +30,7 @@ public class EncryptionUtil {
                 Files.write(keyFile.toPath(), secretKey.getEncoded());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error generating key", e);
+            e.printStackTrace();
         }
     }
 
@@ -42,7 +42,8 @@ public class EncryptionUtil {
             byte[] encryptedData = cipher.doFinal(data.getBytes());
             return Base64.getEncoder().encodeToString(encryptedData);
         } catch (Exception e) {
-            throw new RuntimeException("Error encrypting data", e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -54,7 +55,8 @@ public class EncryptionUtil {
             byte[] decryptedData = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
             return new String(decryptedData);
         } catch (Exception e) {
-            throw new RuntimeException("Error decrypting data", e);
+            e.printStackTrace();
+            return null;
         }
     }
 }
