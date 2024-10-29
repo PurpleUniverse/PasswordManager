@@ -2,9 +2,17 @@ import java.util.Scanner;
 
 public class PasswordManager {
     public static void main(String[] args) {
-        PasswordVault vault = new PasswordVault();
         Scanner scanner = new Scanner(System.in);
 
+        // Prompt user for USB path
+        System.out.print("Enter the path to your USB drive for storing the AES key: ");
+        String usbPath = scanner.nextLine();
+
+        // Set the USB path in EncryptionUtil
+        EncryptionUtil.setUsbPath(usbPath);
+
+        // Start password manager
+        PasswordVault vault = new PasswordVault();
         System.out.println("\n" + " Welcome to the Password Manager ");
         System.out.println(" -------------------------------");
 
@@ -36,6 +44,8 @@ public class PasswordManager {
                     System.out.println("Generated Password: " + generatedPassword + "\n");
                     break;
                 case 4:
+                    System.out.println("WARNING: Please ensure that the USB is removed and stored safely! Then press ENTER to continue.");
+                    scanner.nextLine(); // Ensure user takes action by pausing the console
                     System.out.println("Exiting...");
                     scanner.close();
                     return;

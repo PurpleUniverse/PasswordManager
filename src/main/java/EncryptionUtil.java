@@ -3,40 +3,42 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.util.Base64;
 
 public class EncryptionUtil {
     private static final String ALGORITHM = "AES";
-    private static final String MASTER_KEY_FILE = "src/main/resources/master_key.txt";
+    private static String usbPath; // Variable to hold the USB path
+    private static String AES_KEY_FILE; // Variable for the AES key file path
 
-    private static Key getMasterKey() {
+    public static void setUsbPath(String path) {
+        usbPath = path;
+        AES_KEY_FILE = usbPath + "/aes_key.txt"; // Set the AES key file path based on user input
+        generateKeyIfNotExists(); // Generate key if it doesn't exist
+    }
+
+    private static void generateKeyIfNotExists() {
         try {
-            File keyFile = new File(MASTER_KEY_FILE);
+            File keyFile = new File(AES_KEY_FILE);
+            // Generate a new AES key if it doesn't exist
             if (!keyFile.exists()) {
                 KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM);
                 keyGen.init(256); // AES-256
                 SecretKey secretKey = keyGen.generateKey();
-                try (FileOutputStream fos = new FileOutputStream(keyFile)) {
-                    fos.write(secretKey.getEncoded());
-                }
+                Files.write(keyFile.toPath(), secretKey.getEncoded());
             }
-            byte[] keyBytes = new byte[32]; // 256 bits
-            try (FileInputStream fis = new FileInputStream(keyFile)) {
-                fis.read(keyBytes);
-            }
-            return new SecretKeySpec(keyBytes, ALGORITHM);
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving master key", e);
+            throw new RuntimeException("Error generating key", e);
         }
     }
 
     public static String encrypt(String data) {
         try {
+            Key key = new SecretKeySpec(Files.readAllBytes(Paths.get(AES_KEY_FILE)), ALGORITHM);
             Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, getMasterKey());
+            cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] encryptedData = cipher.doFinal(data.getBytes());
             return Base64.getEncoder().encodeToString(encryptedData);
         } catch (Exception e) {
@@ -46,8 +48,9 @@ public class EncryptionUtil {
 
     public static String decrypt(String encryptedData) {
         try {
+            Key key = new SecretKeySpec(Files.readAllBytes(Paths.get(AES_KEY_FILE)), ALGORITHM);
             Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, getMasterKey());
+            cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] decryptedData = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
             return new String(decryptedData);
         } catch (Exception e) {
