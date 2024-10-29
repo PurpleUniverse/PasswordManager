@@ -1,12 +1,23 @@
+import java.io.File;
 import java.util.Scanner;
 
 public class PasswordManager {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String usbPath = null;
 
-        // Prompt user for USB path
-        System.out.print("Enter the path to your USB drive for storing the AES key: ");
-        String usbPath = scanner.nextLine();
+        // Prompt user for USB path with validation
+        while (true) {
+            System.out.print("\nEnter the path to your USB drive for storing the AES key: ");
+            usbPath = scanner.nextLine();
+            File usbDir = new File(usbPath);
+
+            if (usbDir.exists() && usbDir.isDirectory()) {
+                break; // Valid path, break the loop
+            } else {
+                System.out.println("\nInvalid path. Please enter a valid USB drive path.");
+            }
+        }
 
         // Set the USB path in EncryptionUtil
         EncryptionUtil.setUsbPath(usbPath);
@@ -21,7 +32,7 @@ public class PasswordManager {
             System.out.println("2. Retrieve Credential");
             System.out.println("3. Generate Password");
             System.out.println("4. Exit");
-            System.out.print("\n" + "Choose an option: ");
+            System.out.print("\nChoose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
